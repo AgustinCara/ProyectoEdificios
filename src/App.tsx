@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo } from 'react';
-import type { Unit, FacadeLevel } from './types/realEstate';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import type { Unit, ReservationContact } from './types/realEstate';
 import { mockProjects } from './data/mockProjects';
 import { towerFloorPlan, subdivisionMasterplan, luminaFloorPlan } from './data/vectorMaps';
 import { useInventory } from './hooks/useInventory';
@@ -11,16 +11,30 @@ import { UnitDrawer } from './components/UnitDrawer/UnitDrawer';
 import { FacadeViewer } from './components/FacadeViewer/FacadeViewer';
 import { ProjectOverview } from './components/ProjectOverview/ProjectOverview';
 import { PolygonMapperTool } from './components/PolygonMapper/PolygonMapperTool';
+import { ReservationModal } from './components/ReservationModal/ReservationModal';
+import { readDeepLink, writeDeepLink } from './utils/links';
 
-const projectSlugs = mockProjects.map(p => p.slug);
+// Internal tools (mapper, reset, simulation) only show up with ?admin in the URL
+const showDevTools = new URLSearchParams(window.location.search).has('admin');
+
+// Shared link (?proyecto=…&unidad=…) → initial project, unit and view
+const initialLink = readDeepLink();
+const initialProject =
+  mockProjects.find(p => p.slug === initialLink.projectSlug) ?? mockProjects[0];
+const initialUnit = initialLink.unitCode
+  ? initialProject.units.find(u => u.code.toLowerCase() === initialLink.unitCode!.toLowerCase())
+  : undefined;
+const initialViewMode: ViewMode =
+  initialUnit || initialProject.projectType !== 'BUILDING' ? 'floorplan' : 'facade';
 
 function App() {
-  const [currentSlug, setCurrentSlug] = useState(projectSlugs[0]);
+  const [currentSlug, setCurrentSlug] = useState(initialProject.slug);
   // Store only the ID so the drawer always reflects the latest unit data (live updates, reset)
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('facade');
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(initialUnit?.id ?? null);
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [activeLevelId, setActiveLevelId] = useState<string | null>(null);
   const [isMapperOpen, setIsMapperOpen] = useState(false);
+  const [reservingUnitId, setReservingUnitId] = useState<string | null>(null);
 
   const {
     project,
@@ -35,6 +49,7 @@ function App() {
     clearFilters,
     toggleSimulation,
     resetData,
+    reserveUnit,
   } = useInventory(currentSlug);
 
   // Determine which vector map to use
@@ -48,6 +63,18 @@ function App() {
     () => project?.units.find(u => u.id === selectedUnitId) ?? null,
     [project, selectedUnitId]
   );
+
+  const reservingUnit = useMemo<Unit | null>(
+    () => project?.units.find(u => u.id === reservingUnitId) ?? null,
+    [project, reservingUnitId]
+  );
+
+  // Keep the address bar pointing at the current project/unit (shareable at any time)
+  const projectSlug = project?.slug;
+  const selectedUnitCode = selectedUnit?.code;
+  useEffect(() => {
+    if (projectSlug) writeDeepLink({ projectSlug, unitCode: selectedUnitCode });
+  }, [projectSlug, selectedUnitCode]);
 
   const handleSelectProject = useCallback((slug: string) => {
     setCurrentSlug(slug);
@@ -65,6 +92,24 @@ function App() {
   const handleCloseDrawer = useCallback(() => {
     setSelectedUnitId(null);
   }, []);
+
+  const handleOpenReservation = useCallback((unit: Unit) => {
+    setReservingUnitId(unit.id);
+  }, []);
+
+  const handleCloseReservation = useCallback(() => {
+    setReservingUnitId(null);
+  }, []);
+
+  // Returns an error message for the modal, or null on success
+  const handleConfirmReservation = useCallback(
+    (contact: ReservationContact): string | null => {
+      if (!reservingUnitId) return 'No hay una unidad seleccionada.';
+      const result = reserveUnit(reservingUnitId, contact);
+      return result.ok ? null : result.reason;
+    },
+    [reservingUnitId, reserveUnit]
+  );
 
   const handleResetData = useCallback(() => {
     resetData();
@@ -86,15 +131,6 @@ function App() {
     (_levelId: string, floors: number[]) => {
       setViewMode('floorplan');
       updateFilter('floors', floors.length > 0 ? floors : 'ALL');
-    },
-    [updateFilter]
-  );
-
-  // "Ver Planta Detallada" — respect the level selected in the sidebar, if any
-  const handleViewFloorPlan = useCallback(
-    (level: FacadeLevel | undefined) => {
-      setViewMode('floorplan');
-      updateFilter('floors', level ? level.floorRange : 'ALL');
     },
     [updateFilter]
   );
@@ -121,6 +157,11 @@ function App() {
 
   const handleBackToFacade = isBuilding ? () => handleSetViewMode('facade') : undefined;
 
+  // Cheapest available unit, for the "Precio desde" summary
+  const cheapestAvailable = project.units
+    .filter(u => u.status === 'AVAILABLE')
+    .reduce<Unit | undefined>((min, u) => (!min || u.price < min.price ? u : min), undefined);
+
   return (
     <div className="app-layout">
       <Header
@@ -133,6 +174,7 @@ function App() {
         viewMode={viewMode}
         onSetViewMode={handleSetViewMode}
         onOpenMapper={() => setIsMapperOpen(true)}
+        showDevTools={showDevTools}
       />
 
       <div className="app-body">
@@ -144,11 +186,13 @@ function App() {
               location={project.location}
               developer={project.developer}
               amenities={project.amenities}
-              heroImage={project.heroImage}
-              facadeLevels={project.facade?.levels}
-              activeLevelId={activeLevelId}
-              onSelectLevel={handleSelectLevel}
-              onViewFloorPlan={() => handleViewFloorPlan(activeLevel)}
+              availableUnits={stats.availableUnits}
+              totalUnits={stats.totalUnits}
+              priceFrom={
+                cheapestAvailable
+                  ? { value: cheapestAvailable.price, currency: cheapestAvailable.currency }
+                  : undefined
+              }
             />
             <FacadeViewer
               heroImage={project.heroImage || ''}
@@ -187,15 +231,32 @@ function App() {
       </div>
 
       {/* Unit Detail Drawer */}
-      <UnitDrawer unit={selectedUnit} onClose={handleCloseDrawer} />
-
-      {/* Interactive Polygon Mapper Tool */}
-      <PolygonMapperTool
-        isOpen={isMapperOpen}
-        onClose={() => setIsMapperOpen(false)}
-        viewBoxWidth={mapDef.width}
-        viewBoxHeight={mapDef.height}
+      <UnitDrawer
+        project={project}
+        unit={selectedUnit}
+        onClose={handleCloseDrawer}
+        onReserve={handleOpenReservation}
       />
+
+      {/* Reservation form */}
+      {reservingUnit && (
+        <ReservationModal
+          project={project}
+          unit={reservingUnit}
+          onClose={handleCloseReservation}
+          onConfirm={handleConfirmReservation}
+        />
+      )}
+
+      {/* Interactive Polygon Mapper Tool (internal) */}
+      {showDevTools && (
+        <PolygonMapperTool
+          isOpen={isMapperOpen}
+          onClose={() => setIsMapperOpen(false)}
+          viewBoxWidth={mapDef.width}
+          viewBoxHeight={mapDef.height}
+        />
+      )}
     </div>
   );
 }

@@ -53,29 +53,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside className="sidebar">
       {/* Stats Section */}
       <div className="sidebar__section">
-        <h3 className="sidebar__section-title">Inventario</h3>
-        <div className="stats-grid">
-          <div className="stat-card stat-card--total stat-card--full">
-            <div className="stat-card__value">{stats.totalUnits}</div>
-            <div className="stat-card__label">
-              {projectType === 'BUILDING' ? 'Unidades Totales' : 'Lotes Totales'}
-            </div>
-          </div>
-          <div className="stat-card stat-card--available">
-            <div className="stat-card__value">{stats.availableUnits}</div>
-            <div className="stat-card__label">Disponibles</div>
-          </div>
-          <div className="stat-card stat-card--reserved">
-            <div className="stat-card__value">{stats.reservedUnits}</div>
-            <div className="stat-card__label">Reservados</div>
-          </div>
-          <div className="stat-card stat-card--sold" style={{ gridColumn: '1 / -1' }}>
-            <div className="stat-card__value">{stats.soldUnits}</div>
-            <div className="stat-card__label">Vendidos</div>
-          </div>
+        <div className="inventory-header">
+          <h3 className="sidebar__section-title">Inventario</h3>
+          <span className="inventory-header__total">
+            {stats.totalUnits} {projectType === 'BUILDING' ? 'unidades' : 'lotes'}
+          </span>
         </div>
 
-        {/* Progress Bar */}
         <div className="inventory-bar">
           <div
             className="inventory-bar__segment inventory-bar__segment--available"
@@ -89,6 +73,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="inventory-bar__segment inventory-bar__segment--sold"
             style={{ width: `${soldPct}%` }}
           />
+        </div>
+
+        <div className="inventory-legend">
+          <span className="inventory-legend__item">
+            <span className="inventory-legend__dot inventory-legend__dot--available" />
+            <strong>{stats.availableUnits}</strong> disponibles
+          </span>
+          <span className="inventory-legend__item">
+            <span className="inventory-legend__dot inventory-legend__dot--reserved" />
+            <strong>{stats.reservedUnits}</strong> reservados
+          </span>
+          <span className="inventory-legend__item">
+            <span className="inventory-legend__dot inventory-legend__dot--sold" />
+            <strong>{stats.soldUnits}</strong> vendidos
+          </span>
         </div>
       </div>
 

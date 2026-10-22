@@ -55,11 +55,19 @@ export interface FacadeMap {
   levels: FacadeLevel[];
 }
 
+/** Condiciones de financiación que ofrece la desarrolladora para el proyecto */
+export interface FinancingPlan {
+  minDownPaymentPct: number;   // anticipo mínimo, ej. 30
+  maxDownPaymentPct: number;   // anticipo máximo, ej. 80
+  installmentOptions: number[]; // cantidad de cuotas mensuales, ej. [12, 24, 36]
+  annualRatePct: number;       // tasa nominal anual; 0 = sin interés
+  note?: string;               // ej. "Cuotas en USD, sin ajuste"
+}
+
 export interface Project {
   id: string;
   slug: string;
   name: string;
-  tagline: string;
   location: string;
   projectType: ProjectType;
   blueprint: Blueprint;
@@ -68,12 +76,22 @@ export interface Project {
   amenities?: string[];
   heroImage?: string;
   facade?: FacadeMap;
-  summaryStats?: {
-    totalUnits: number;
-    availableUnits: number;
-    reservedUnits: number;
-    soldUnits: number;
-  };
+  /** Número de WhatsApp de ventas, formato internacional sin "+" (ej: "5491123006327") */
+  contactWhatsApp?: string;
+  financing?: FinancingPlan;
+}
+
+export interface ReservationContact {
+  name: string;
+  email: string;
+  phone: string;
+  message?: string;
+}
+
+export interface Reservation extends ReservationContact {
+  id: string;
+  unitId: string;
+  createdAt: string;
 }
 
 export interface FilterState {

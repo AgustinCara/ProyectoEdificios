@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import type { Project, Unit, FilterState, RealTimeEvent } from '../types/realEstate';
+import type {
+  Project,
+  Unit,
+  FilterState,
+  RealTimeEvent,
+  ReservationContact,
+} from '../types/realEstate';
 import { realEstateService } from '../services/realEstateService';
 
 const defaultFilters: FilterState = {
@@ -92,6 +98,12 @@ export function useInventory(projectSlug: string) {
     realEstateService.resetData();
     loadProject();
   }, [loadProject]);
+
+  // Reserve a unit — the service emits STATUS_CHANGED, which reloads the project above
+  const reserveUnit = useCallback(
+    (unitId: string, contact: ReservationContact) => realEstateService.reserveUnit(unitId, contact),
+    []
+  );
 
   // Filter logic
   const filteredUnits = useMemo<Unit[]>(() => {
@@ -207,5 +219,6 @@ export function useInventory(projectSlug: string) {
     clearFilters,
     toggleSimulation,
     resetData,
+    reserveUnit,
   };
 }

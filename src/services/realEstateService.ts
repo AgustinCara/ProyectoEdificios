@@ -6,7 +6,14 @@
  * Includes a real-time event simulator (SSE/WebSocket emulation).
  */
 
-import type { Project, Unit, UnitStatus, RealTimeEvent } from '../types/realEstate';
+import type {
+  Project,
+  Unit,
+  UnitStatus,
+  RealTimeEvent,
+  Reservation,
+  ReservationContact,
+} from '../types/realEstate';
 import { mockProjects } from '../data/mockProjects';
 
 // ─── Deep clone helper (to avoid mutating original mock data) ────────────────
@@ -20,6 +27,7 @@ class RealEstateService {
   private projects: Project[];
   private listeners: Set<(event: RealTimeEvent) => void> = new Set();
   private simulationInterval: ReturnType<typeof setInterval> | null = null;
+  private reservations: Reservation[] = [];
 
   constructor() {
     this.projects = deepClone(mockProjects);
@@ -55,14 +63,6 @@ class RealEstateService {
         const oldStatus = unit.status;
         unit.status = newStatus;
 
-        // Recompute stats
-        p.summaryStats = {
-          totalUnits: p.units.length,
-          availableUnits: p.units.filter(u => u.status === 'AVAILABLE').length,
-          reservedUnits: p.units.filter(u => u.status === 'RESERVED').length,
-          soldUnits: p.units.filter(u => u.status === 'SOLD').length,
-        };
-
         // Emit event
         this.emit({
           type: 'STATUS_CHANGED',
@@ -76,6 +76,37 @@ class RealEstateService {
       }
     }
     return false;
+  }
+
+  // ─── Reservations ──────────────────────────────────────────────────────
+
+  /**
+   * Reserve an available unit for a buyer. Fails if the unit was taken in the
+   * meantime (another buyer, live update), so the UI can tell the user.
+   */
+  reserveUnit(
+    unitId: string,
+    contact: ReservationContact
+  ): { ok: true; reservation: Reservation } | { ok: false; reason: string } {
+    const unit = this.getUnit(unitId);
+    if (!unit) return { ok: false, reason: 'La unidad no existe.' };
+    if (unit.status !== 'AVAILABLE') {
+      return { ok: false, reason: 'La unidad ya no está disponible.' };
+    }
+
+    const reservation: Reservation = {
+      ...contact,
+      id: `res-${Date.now()}`,
+      unitId,
+      createdAt: new Date().toISOString(),
+    };
+    this.reservations.push(reservation);
+    this.updateUnitStatus(unitId, 'RESERVED');
+    return { ok: true, reservation };
+  }
+
+  getReservations(): Reservation[] {
+    return [...this.reservations];
   }
 
   // ─── Real-time Event System ─────────────────────────────────────────────
@@ -134,6 +165,7 @@ class RealEstateService {
   /** Reset all units to original mock state */
   resetData(): void {
     this.projects = deepClone(mockProjects);
+    this.reservations = [];
   }
 }
 

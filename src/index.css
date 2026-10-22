@@ -49,17 +49,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-medium);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--border-highlight);
 }
 
 /* ===== Selection ===== */
 ::selection {
-  background: rgba(30, 58, 138, 0.15);
+  background: var(--accent-gold-bg);
   color: var(--text-primary);
 }
 

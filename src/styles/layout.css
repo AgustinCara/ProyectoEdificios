@@ -45,22 +45,23 @@
 .header__logo {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  background: var(--primary);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--accent-gold-soft);
   font-weight: 700;
   font-size: 16px;
   font-family: var(--font-heading);
-  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.2);
 }
 
 .header__title {
-  font-family: var(--font-heading);
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: 0.2px;
   color: var(--text-primary);
 }
 
@@ -271,71 +272,56 @@
   margin-bottom: 14px;
 }
 
-/* Stats Grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+/* Inventory summary */
+.inventory-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
-.stat-card {
-  padding: 14px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-glass-card);
-  border: 1px solid var(--border-subtle);
-  transition: all var(--transition-normal);
-  cursor: default;
-}
-
-.stat-card:hover {
-  border-color: var(--border-medium);
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-1px);
-}
-
-.stat-card--full {
-  grid-column: 1 / -1;
-}
-
-.stat-card__value {
-  font-family: var(--font-heading);
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.stat-card__label {
+.inventory-header__total {
   font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
-.stat-card--available .stat-card__value {
-  color: var(--status-available);
-}
-
-.stat-card--reserved .stat-card__value {
-  color: var(--status-reserved);
-}
-
-.stat-card--sold .stat-card__value {
-  color: var(--status-sold);
-}
-
-.stat-card--total .stat-card__value {
-  color: var(--text-primary);
-}
-
-/* Progress Bar */
 .inventory-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: #e2e8f0;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border-subtle);
   overflow: hidden;
   display: flex;
-  margin-top: 12px;
 }
+
+.inventory-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.inventory-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.inventory-legend__item strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.inventory-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.inventory-legend__dot--available { background: var(--status-available); }
+.inventory-legend__dot--reserved  { background: var(--status-reserved); }
+.inventory-legend__dot--sold      { background: var(--status-sold); }
 
 .inventory-bar__segment {
   height: 100%;

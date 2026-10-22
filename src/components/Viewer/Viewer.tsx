@@ -3,13 +3,7 @@ import type { Unit } from '../../types/realEstate';
 import type { VectorMapDef } from '../../data/vectorMaps';
 import { usePanZoom } from '../../hooks/usePanZoom';
 import { Tooltip } from '../Tooltip/Tooltip';
-import {
-  ZoomIn,
-  ZoomOut,
-  Maximize,
-  Map,
-  ArrowLeft,
-} from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize, ArrowLeft } from 'lucide-react';
 
 interface ViewerProps {
   mapDef: VectorMapDef;
@@ -263,24 +257,20 @@ export const Viewer: React.FC<ViewerProps> = ({
         </div>
       </div>
 
-      {/* Breadcrumb: floor origin + back button */}
-      {onBackToFacade && (
-        <div className="viewer-breadcrumb">
-          <button className="viewer-breadcrumb__back" onClick={onBackToFacade}>
-            <ArrowLeft size={14} />
-            Fachada
-          </button>
-          <span className="viewer-breadcrumb__sep">/</span>
-          <span className="viewer-breadcrumb__current">
-            {activeLevelLabel || blueprintName}
-          </span>
-        </div>
-      )}
-
-      {/* Viewer Info Badge */}
-      <div className="viewer-info">
-        <Map size={14} className="viewer-info__icon" />
-        {blueprintName}
+      {/* Breadcrumb: where we are (+ back to facade for buildings) */}
+      <div className="viewer-breadcrumb">
+        {onBackToFacade && (
+          <>
+            <button className="viewer-breadcrumb__back" onClick={onBackToFacade}>
+              <ArrowLeft size={14} />
+              Fachada
+            </button>
+            <span className="viewer-breadcrumb__sep">/</span>
+          </>
+        )}
+        <span className="viewer-breadcrumb__current">
+          {activeLevelLabel || blueprintName}
+        </span>
       </div>
 
       {/* Zoom Controls */}

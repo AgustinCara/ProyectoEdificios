@@ -22,7 +22,9 @@ interface HeaderProps {
   onResetData: () => void;
   viewMode: ViewMode;
   onSetViewMode: (mode: ViewMode) => void;
-  onOpenMapper?: () => void;
+  onOpenMapper: () => void;
+  /** Mapper, reset and simulation are internal tools — hidden from buyers */
+  showDevTools: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,6 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
   viewMode,
   onSetViewMode,
   onOpenMapper,
+  showDevTools,
 }) => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const isBuilding = currentProject?.projectType === 'BUILDING';
@@ -120,39 +123,36 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </div>
 
-      <div className="header__right">
-        {/* Polygon Mapper Tool Toggle */}
-        {onOpenMapper && (
+      {showDevTools && (
+        <div className="header__right">
           <button
             className="live-toggle"
             onClick={onOpenMapper}
             title="Herramienta para trazar coordenadas sobre planos y renders"
           >
             <PenTool size={14} />
-            Modo Mapeador
+            Mapeador
           </button>
-        )}
 
-        {/* Reset Button */}
-        <button
-          className="live-toggle"
-          onClick={onResetData}
-          title="Restablecer datos originales"
-        >
-          <RotateCcw size={14} />
-          Reset
-        </button>
+          <button
+            className="live-toggle"
+            onClick={onResetData}
+            title="Restablecer datos originales"
+          >
+            <RotateCcw size={14} />
+            Reset
+          </button>
 
-        {/* Live Simulation Toggle */}
-        <button
-          className={`live-toggle ${isSimulating ? 'live-toggle--active' : ''}`}
-          onClick={onToggleSimulation}
-        >
-          <span className="live-toggle__dot" />
-          <Radio size={14} />
-          {isSimulating ? 'Simulación Activa' : 'Simulación en Vivo'}
-        </button>
-      </div>
+          <button
+            className={`live-toggle ${isSimulating ? 'live-toggle--active' : ''}`}
+            onClick={onToggleSimulation}
+          >
+            <span className="live-toggle__dot" />
+            <Radio size={14} />
+            {isSimulating ? 'Simulación Activa' : 'Simulación'}
+          </button>
+        </div>
+      )}
     </header>
   );
 };

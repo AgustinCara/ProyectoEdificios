@@ -162,8 +162,8 @@
 }
 
 .drawer__title {
-  font-family: var(--font-heading);
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: 26px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -307,8 +307,8 @@
 /* Drawer Price */
 .drawer__price-block {
   padding: 20px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: var(--accent-gold-bg);
+  border: 1px solid var(--accent-gold-border);
   border-radius: var(--radius-md);
   text-align: center;
 }
@@ -320,9 +320,9 @@
 }
 
 .drawer__price-value {
-  font-family: var(--font-heading);
-  font-size: 32px;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
   color: var(--accent-gold);
 }
 
@@ -365,7 +365,11 @@
 
 .drawer__btn {
   flex: 1;
-  padding: 12px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: 14px;
@@ -373,18 +377,61 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
   border: none;
 }
 
+.drawer__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* WhatsApp green, darkened so white text stays readable */
+.drawer__btn--whatsapp {
+  background: #128c4a;
+  color: #ffffff;
+}
+
+.drawer__btn--whatsapp:hover {
+  background: #0e753d;
+}
+
+.drawer__header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.drawer__close--done {
+  color: var(--status-available);
+  border-color: var(--status-available-border);
+  background: var(--status-available-bg);
+}
+
+.drawer__toast {
+  position: absolute;
+  top: 72px;
+  right: 24px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--text-primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1;
+  animation: tooltipIn 0.2s ease;
+}
+
 .drawer__btn--primary {
-  background: linear-gradient(135deg, var(--primary), #2563eb);
+  background: var(--accent-gold);
   color: white;
-  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.2);
+  box-shadow: 0 4px 14px var(--accent-gold-glow);
 }
 
 .drawer__btn--primary:hover {
+  background: var(--accent-gold-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 6px 18px var(--accent-gold-glow);
 }
 
 .drawer__btn--secondary {
@@ -395,6 +442,116 @@
 
 .drawer__btn--secondary:hover {
   background: var(--bg-glass-hover);
+}
+
+/* ===== Financing Calculator ===== */
+.financing {
+  padding: 16px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.financing__field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.financing__field-value {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+}
+
+.financing__range {
+  width: 100%;
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+}
+
+.financing__options {
+  display: flex;
+  gap: 8px;
+}
+
+.financing__option {
+  flex: 1;
+  padding: 8px 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.financing__option:hover {
+  border-color: var(--accent-gold-border);
+  color: var(--text-primary);
+}
+
+.financing__option--active {
+  background: var(--accent-gold-bg);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.financing__result {
+  padding: 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-gold-border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.financing__result-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.financing__result-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin: 2px 0;
+}
+
+.financing__result-detail {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.financing__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #128c4a;
+  text-decoration: none;
+}
+
+.financing__cta:hover {
+  text-decoration: underline;
+}
+
+.financing__disclaimer {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 /* ===== Empty / No Results State ===== */
@@ -424,4 +581,167 @@
 .empty-state__subtitle {
   font-size: 12px;
   color: var(--text-muted);
+}
+/* ===== Reservation Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(28, 25, 23, 0.45);
+  backdrop-filter: blur(3px);
+  animation: tooltipIn 0.2s ease;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 28px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.modal__close:hover {
+  background: var(--bg-glass-hover);
+  color: var(--text-primary);
+}
+
+.modal__title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.modal__subtitle {
+  font-size: 14px;
+  color: var(--accent-gold);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .modal__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.modal__field em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.modal__field input,
+.modal__field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  background: var(--bg-main);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-primary);
+  resize: vertical;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.modal__field input:focus,
+.modal__field textarea:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px var(--accent-gold-glow);
+  background: var(--bg-surface);
+}
+
+.modal__field input[aria-invalid='true'] {
+  border-color: var(--status-sold);
+}
+
+.modal__error {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--status-sold);
+}
+
+.modal__alert {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--status-sold-bg);
+  border: 1px solid var(--status-sold-border);
+  color: var(--status-sold);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modal__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.modal__fine-print {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.modal__success {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.modal__success-icon {
+  color: var(--status-available);
+  margin-bottom: 12px;
+}
+
+.modal__text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 8px 0 20px;
 }

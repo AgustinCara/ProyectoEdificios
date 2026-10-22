@@ -234,17 +234,6 @@ const barrioUnits: Unit[] = [
   makeLot('E', 8, 'lot-E8', lotStatuses[27], 510, 41000,  19, 26.8),
 ];
 
-// ─── COMPUTE STATS ──────────────────────────────────────────────────────────
-
-function computeStats(units: Unit[]) {
-  return {
-    totalUnits: units.length,
-    availableUnits: units.filter(u => u.status === 'AVAILABLE').length,
-    reservedUnits: units.filter(u => u.status === 'RESERVED').length,
-    soldUnits: units.filter(u => u.status === 'SOLD').length,
-  };
-}
-
 // ─── RESIDENCIAS LUMINA PLAZA (Proyecto con Render y Planta Real) ─────────
 
 const luminaUnits: Unit[] = [
@@ -328,16 +317,26 @@ const luminaUnits: Unit[] = [
 
 // ─── EXPORT PROJECTS ────────────────────────────────────────────────────────
 
+// Ventas: 11 2300-6327 (móvil AR → formato internacional 54 9 11 …)
+const SALES_WHATSAPP = '5491123006327';
+
 export const mockProjects: Project[] = [
   {
     id: 'proj-lumina-plaza',
     slug: 'residencias-lumina-plaza',
     name: 'Residencias Lumina Plaza',
-    tagline: 'Render arquitectónico con plantas reales de alta definición',
     location: 'Av. Alicia Moreau de Justo 1500, Puerto Madero, Buenos Aires',
     projectType: 'BUILDING',
     developer: 'Lumina Development Group',
-    amenities: ['Render Fachada Real', 'Plantas Arquitectónicas Reales', 'Rooftop Lounge', 'Piscina Infinity', 'Gimnasio Tech', 'Cocheras Valet'],
+    contactWhatsApp: SALES_WHATSAPP,
+    financing: {
+      minDownPaymentPct: 30,
+      maxDownPaymentPct: 80,
+      installmentOptions: [12, 24, 36],
+      annualRatePct: 0,
+      note: 'Cuotas fijas en USD',
+    },
+    amenities: ['Rooftop Lounge', 'Piscina Infinity', 'Gimnasio Tech', 'Cocheras Valet'],
     heroImage: '/building-facade-real.jpg',
     facade: luminaFacade,
     blueprint: {
@@ -350,16 +349,22 @@ export const mockProjects: Project[] = [
       imageUrl: '/floorplan-real.jpg',
     },
     units: luminaUnits,
-    summaryStats: computeStats(luminaUnits),
   },
   {
     id: 'proj-torre-mirador',
     slug: 'torre-mirador',
     name: 'Torre Mirador',
-    tagline: 'Residencias en altura con vista panorámica',
     location: 'Av. del Libertador 4200, Buenos Aires',
     projectType: 'BUILDING',
     developer: 'Solutec',
+    contactWhatsApp: SALES_WHATSAPP,
+    financing: {
+      minDownPaymentPct: 40,
+      maxDownPaymentPct: 90,
+      installmentOptions: [12, 24, 36, 48],
+      annualRatePct: 6,
+      note: 'Cuotas en USD',
+    },
     amenities: ['Pileta', 'SUM', 'Cocheras', 'Locales', 'Gimnasio', 'Lavadero'],
     heroImage: '/building-facade.jpg',
     facade: torreMiradorFacade,
@@ -372,15 +377,21 @@ export const mockProjects: Project[] = [
       height: 800,
     },
     units: torreUnits,
-    summaryStats: computeStats(torreUnits),
   },
   {
     id: 'proj-barrio-alamos',
     slug: 'barrio-los-alamos',
     name: 'Barrio Los Álamos',
-    tagline: 'Barrio cerrado con lotes desde 380m²',
     location: 'Ruta 8 Km 62, Pilar, Buenos Aires',
     projectType: 'SUBDIVISION',
+    contactWhatsApp: SALES_WHATSAPP,
+    financing: {
+      minDownPaymentPct: 20,
+      maxDownPaymentPct: 80,
+      installmentOptions: [12, 24, 36, 60],
+      annualRatePct: 8,
+      note: 'Cuotas en USD',
+    },
     blueprint: {
       id: 'bp-alamos-master',
       name: 'Masterplan General',
@@ -390,6 +401,5 @@ export const mockProjects: Project[] = [
       height: 1000,
     },
     units: barrioUnits,
-    summaryStats: computeStats(barrioUnits),
   },
 ];

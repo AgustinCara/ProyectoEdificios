@@ -1,5 +1,5 @@
-import React from 'react';
-import type { Unit } from '../../types/realEstate';
+import React, { useEffect, useState } from 'react';
+import type { Project, Unit } from '../../types/realEstate';
 import {
   STATUS_LABELS,
   UNIT_TYPE_LABELS,
@@ -7,6 +7,8 @@ import {
   formatCurrency,
   formatNumber,
 } from '../../utils/format';
+import { buildInquiryMessage, buildUnitUrl, buildWhatsAppUrl } from '../../utils/links';
+import { FinancingCalculator } from '../FinancingCalculator/FinancingCalculator';
 import {
   X,
   Maximize2,
@@ -14,23 +16,53 @@ import {
   Bath,
   Compass,
   Ruler,
-  DollarSign,
   Tag,
-  Phone,
   CalendarCheck,
+  MessageCircle,
+  Share2,
+  Check,
 } from 'lucide-react';
 
 interface UnitDrawerProps {
+  project: Project;
   unit: Unit | null;
   onClose: () => void;
+  onReserve: (unit: Unit) => void;
 }
 
-export const UnitDrawer: React.FC<UnitDrawerProps> = ({ unit, onClose }) => {
+export const UnitDrawer: React.FC<UnitDrawerProps> = ({ project, unit, onClose, onReserve }) => {
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Reset the "copied" feedback when switching units
+  useEffect(() => {
+    setLinkCopied(false);
+  }, [unit?.id]);
+
   if (!unit) return null;
 
   const pricePerM2 = unit.surfaceTotalM2 > 0
     ? Math.round(unit.price / unit.surfaceTotalM2)
     : 0;
+
+  const whatsAppUrl = project.contactWhatsApp
+    ? buildWhatsAppUrl(project.contactWhatsApp, buildInquiryMessage(project, unit))
+    : undefined;
+
+  // Native share sheet on mobile; copy to clipboard elsewhere
+  const handleShare = async () => {
+    const url = buildUnitUrl(project.slug, unit.code);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${unit.code} · ${project.name}`, url });
+      } catch {
+        // User dismissed the share sheet — nothing to do
+      }
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
 
   return (
     <>
@@ -49,10 +81,21 @@ export const UnitDrawer: React.FC<UnitDrawerProps> = ({ unit, onClose }) => {
               {unit.floor !== undefined ? ` · ${unit.floor === 0 ? 'Planta Baja' : `Piso ${unit.floor}`}` : ''}
             </p>
           </div>
-          <button className="drawer__close" onClick={onClose}>
-            <X size={18} />
-          </button>
+          <div className="drawer__header-actions">
+            <button
+              className={`drawer__close ${linkCopied ? 'drawer__close--done' : ''}`}
+              onClick={handleShare}
+              title="Compartir unidad"
+              aria-label="Compartir unidad"
+            >
+              {linkCopied ? <Check size={18} /> : <Share2 size={16} />}
+            </button>
+            <button className="drawer__close" onClick={onClose} aria-label="Cerrar">
+              <X size={18} />
+            </button>
+          </div>
         </div>
+        {linkCopied && <div className="drawer__toast">Link copiado</div>}
 
         {/* Body */}
         <div className="drawer__body">
@@ -77,6 +120,16 @@ export const UnitDrawer: React.FC<UnitDrawerProps> = ({ unit, onClose }) => {
               )}
             </div>
           </div>
+
+          {/* Financing — keyed by project so the chosen plan carries over between its units */}
+          {project.financing && unit.status === 'AVAILABLE' && (
+            <FinancingCalculator
+              key={project.slug}
+              project={project}
+              plan={project.financing}
+              unit={unit}
+            />
+          )}
 
           {/* Specifications */}
           <div className="drawer__section">
@@ -115,13 +168,6 @@ export const UnitDrawer: React.FC<UnitDrawerProps> = ({ unit, onClose }) => {
                   <div className="drawer__spec-label">Orientación</div>
                 </div>
               )}
-              <div className="drawer__spec">
-                <DollarSign size={18} className="drawer__spec-icon" />
-                <div className="drawer__spec-value">
-                  {pricePerM2 > 0 ? formatNumber(pricePerM2) : '—'}
-                </div>
-                <div className="drawer__spec-label">{currencySymbol(unit.currency)}/m²</div>
-              </div>
             </div>
           </div>
 
@@ -157,25 +203,26 @@ export const UnitDrawer: React.FC<UnitDrawerProps> = ({ unit, onClose }) => {
 
         {/* Actions */}
         <div className="drawer__actions">
-          {unit.status === 'AVAILABLE' ? (
-            <>
-              <button className="drawer__btn drawer__btn--primary">
-                <CalendarCheck size={16} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
-                Reservar Unidad
-              </button>
-              <button className="drawer__btn drawer__btn--secondary">
-                <Phone size={16} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
-                Consultar
-              </button>
-            </>
-          ) : unit.status === 'RESERVED' ? (
-            <button className="drawer__btn drawer__btn--secondary" style={{ flex: 1 }}>
-              <Phone size={16} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />
-              Consultar Disponibilidad
+          {unit.status === 'AVAILABLE' && (
+            <button className="drawer__btn drawer__btn--primary" onClick={() => onReserve(unit)}>
+              <CalendarCheck size={16} />
+              Reservar
             </button>
-          ) : (
-            <button className="drawer__btn drawer__btn--secondary" style={{ flex: 1, opacity: 0.6 }}>
-              Unidad No Disponible
+          )}
+          {(unit.status === 'AVAILABLE' || unit.status === 'RESERVED') && whatsAppUrl && (
+            <a
+              className="drawer__btn drawer__btn--whatsapp"
+              href={whatsAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageCircle size={16} />
+              {unit.status === 'RESERVED' ? 'Consultar disponibilidad' : 'Consultar por WhatsApp'}
+            </a>
+          )}
+          {(unit.status === 'SOLD' || unit.status === 'BLOCKED') && (
+            <button className="drawer__btn drawer__btn--secondary" disabled>
+              Unidad no disponible
             </button>
           )}
         </div>

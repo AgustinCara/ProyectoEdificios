@@ -233,29 +233,6 @@
   font-family: var(--font-body);
 }
 
-/* ===== Viewer Info Badge ===== */
-.viewer-info {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-sm);
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  z-index: 80;
-}
-
-.viewer-info__icon {
-  color: var(--primary);
-}
-
 /* ===== Viewer Breadcrumb (Floor navigation) ===== */
 .viewer-breadcrumb {
   position: absolute;
