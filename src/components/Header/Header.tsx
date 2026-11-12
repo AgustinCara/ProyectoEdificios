@@ -107,16 +107,18 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 className={`view-toggle__btn ${viewMode === 'facade' ? 'view-toggle__btn--active' : ''}`}
                 onClick={() => onSetViewMode('facade')}
+                aria-label="Ver fachada"
               >
                 <Image size={14} />
-                Fachada
+                <span className="view-toggle__label">Fachada</span>
               </button>
               <button
                 className={`view-toggle__btn ${viewMode === 'floorplan' ? 'view-toggle__btn--active' : ''}`}
                 onClick={() => onSetViewMode('floorplan')}
+                aria-label="Ver planta"
               >
                 <Layers size={14} />
-                Planta
+                <span className="view-toggle__label">Planta</span>
               </button>
             </div>
           </>

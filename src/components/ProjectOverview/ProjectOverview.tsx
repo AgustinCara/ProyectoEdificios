@@ -75,7 +75,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         {/* How to navigate */}
         <div className="po-section po-hint">
           <MousePointerClick size={16} className="po-hint__icon" />
-          <p>Hacé clic en un piso de la fachada para ver su planta y las unidades disponibles.</p>
+          <p>Elegí un piso de la fachada para ver su planta y las unidades disponibles.</p>
         </div>
       </div>
     </aside>

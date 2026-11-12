@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import type { FacadeLevel, FacadeMap } from '../../types/realEstate';
 import { usePanZoom } from '../../hooks/usePanZoom';
 import { ZoomIn, ZoomOut, Maximize } from 'lucide-react';
@@ -33,8 +33,17 @@ export const FacadeViewer: React.FC<FacadeViewerProps> = ({
     zoomIn,
     zoomOut,
     resetZoom,
+    centerCanvas,
     zoomPercent,
   } = usePanZoom();
+
+  // Fit the facade to the available space on load and project change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      centerCanvas(facadeMap.width, facadeMap.height);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [facadeMap, centerCanvas]);
 
   const [hoveredLevelId, setHoveredLevelId] = useState<string | null>(null);
 
@@ -57,7 +66,9 @@ export const FacadeViewer: React.FC<FacadeViewerProps> = ({
           className="viewer__canvas facade-viewer__canvas"
           style={{
             transform: `translate(${state.x}px, ${state.y}px) scale(${state.scale})`,
-          }}
+            // Lets badges cancel the zoom and keep a readable size on small screens
+            '--inv-scale': 1 / state.scale,
+          } as React.CSSProperties}
         >
           {/* Background image */}
           <div className="facade-viewer__image-wrap">

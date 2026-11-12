@@ -55,6 +55,8 @@ export const Viewer: React.FC<ViewerProps> = ({
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
+      // Hover tooltip is mouse-only: on touch it would stick after a tap
+      if (e.pointerType !== 'mouse') return;
       const target = e.target as SVGElement;
       const unitEl = target.closest('[data-unit-id]') as SVGElement | null;
       if (unitEl) {

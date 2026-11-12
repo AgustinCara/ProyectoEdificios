@@ -21,6 +21,7 @@
 .facade-viewer__canvas {
   transform-origin: 0 0;
   will-change: transform;
+  --badge-scale: var(--inv-scale); /* badges keep a readable on-screen size at any zoom */
 }
 
 .facade-viewer__image-wrap {
@@ -79,9 +80,11 @@
 
 /* ─── Price Badges ─── */
 
+/* --badge-scale cancels the canvas zoom (set on .facade-viewer__canvas) */
 .facade-badge {
+  --s: var(--badge-scale, 1);
   position: absolute;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(var(--s));
   background: rgba(0, 0, 0, 0.78);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -96,15 +99,16 @@
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: all;
   white-space: nowrap;
+  line-height: 1.3; /* the image wrapper sets line-height: 0 */
   z-index: 10;
 }
 
 .facade-badge--left {
-  transform: translate(-85%, -50%);
+  transform: translate(-85%, -50%) scale(var(--s));
 }
 
 .facade-badge--right {
-  transform: translate(-15%, -50%);
+  transform: translate(-15%, -50%) scale(var(--s));
 }
 
 .facade-badge:hover,
@@ -112,17 +116,17 @@
   background: rgba(17, 24, 39, 0.9);
   border-color: var(--accent-gold-soft);
   box-shadow: 0 0 18px rgba(212, 176, 106, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3);
-  transform: translate(-50%, -50%) scale(1.05);
+  transform: translate(-50%, -50%) scale(calc(var(--s) * 1.05));
 }
 
 .facade-badge--left:hover,
 .facade-badge--left.facade-badge--active {
-  transform: translate(-85%, -50%) scale(1.05);
+  transform: translate(-85%, -50%) scale(calc(var(--s) * 1.05));
 }
 
 .facade-badge--right:hover,
 .facade-badge--right.facade-badge--active {
-  transform: translate(-15%, -50%) scale(1.05);
+  transform: translate(-15%, -50%) scale(calc(var(--s) * 1.05));
 }
 
 .facade-badge__label {
