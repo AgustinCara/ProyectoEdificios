@@ -1,7 +1,7 @@
 import type { Project, Unit } from '../types/realEstate';
 import { formatCurrency } from './format';
 
-// URL params, ej: ?proyecto=torre-mirador&unidad=4B
+// URL params, ej: ?proyecto=barrio-los-alamos&unidad=A3
 const PROJECT_PARAM = 'proyecto';
 const UNIT_PARAM = 'unidad';
 

@@ -13,7 +13,7 @@ simula la financiación y reserva o consulta por WhatsApp.
 - **Ficha de unidad** con precio por m², especificaciones y **simulador de financiación**
   (anticipo + cuotas, con o sin interés).
 - **Reserva online** con formulario y aviso por WhatsApp al equipo de ventas.
-- **Links para compartir**: `?proyecto=torre-mirador&unidad=4A` abre directo esa unidad.
+- **Links para compartir**: `?proyecto=barrio-los-alamos&unidad=A3` abre directo esa unidad.
 - Diseño adaptado a celular.
 
 ## Desarrollo
