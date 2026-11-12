@@ -3,7 +3,7 @@ import type { FinancingPlan, Project, Unit } from '../../types/realEstate';
 import { formatCurrency } from '../../utils/format';
 import { computeFinancing } from '../../utils/financing';
 import { buildFinancingMessage, buildWhatsAppUrl } from '../../utils/links';
-import { Calculator, MessageCircle } from 'lucide-react';
+import { Calculator, ChevronDown, MessageCircle } from 'lucide-react';
 
 interface FinancingCalculatorProps {
   project: Project;
@@ -14,6 +14,7 @@ interface FinancingCalculatorProps {
 const DOWN_PAYMENT_STEP = 5;
 
 export const FinancingCalculator: React.FC<FinancingCalculatorProps> = ({ project, plan, unit }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [downPaymentPct, setDownPaymentPct] = useState(plan.minDownPaymentPct);
   const [months, setMonths] = useState(plan.installmentOptions[Math.floor(plan.installmentOptions.length / 2)]);
 
@@ -32,14 +33,31 @@ export const FinancingCalculator: React.FC<FinancingCalculatorProps> = ({ projec
       )
     : undefined;
 
+  const maxMonths = Math.max(...plan.installmentOptions);
+
   return (
     <div className="drawer__section">
-      <h4 className="drawer__section-title">
-        <Calculator size={12} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle' }} />
-        Simulá tu financiación
-      </h4>
+      {/* Collapsed by default: the card itself is the toggle */}
+      <button
+        type="button"
+        className={`financing-toggle ${isOpen ? 'financing-toggle--open' : ''}`}
+        onClick={() => setIsOpen(open => !open)}
+        aria-expanded={isOpen}
+        aria-controls="financing-panel"
+      >
+        <Calculator size={18} className="financing-toggle__icon" />
+        <span className="financing-toggle__text">
+          <span className="financing-toggle__title">Simulá tu financiación</span>
+          <span className="financing-toggle__hint">
+            Anticipo desde {plan.minDownPaymentPct}% · hasta {maxMonths} cuotas
+            {plan.annualRatePct === 0 ? ' sin interés' : ''}
+          </span>
+        </span>
+        <ChevronDown size={18} className="financing-toggle__chevron" />
+      </button>
 
-      <div className="financing">
+      {isOpen && (
+      <div className="financing" id="financing-panel">
         <div className="financing__field">
           <div className="financing__field-header">
             <label htmlFor="financing-down-payment">Anticipo</label>
@@ -101,6 +119,7 @@ export const FinancingCalculator: React.FC<FinancingCalculatorProps> = ({ projec
           {plan.note ? `${plan.note}. ` : ''}Valores estimativos, sujetos a confirmación comercial.
         </p>
       </div>
+      )}
     </div>
   );
 };

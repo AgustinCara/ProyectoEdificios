@@ -447,6 +447,74 @@
 }
 
 /* ===== Financing Calculator ===== */
+.financing-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+/* Hover only with a mouse: on touch it would stay highlighted after the tap */
+@media (hover: hover) {
+  .financing-toggle:hover {
+    border-color: var(--accent-gold-border);
+    background: var(--accent-gold-bg);
+  }
+}
+
+/* Open: toggle and panel read as one card, split by a thin divider */
+.financing-toggle--open {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.financing-toggle--open + .financing {
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  padding-top: 4px;
+}
+
+.financing-toggle__icon {
+  flex-shrink: 0;
+  color: var(--accent-gold);
+}
+
+.financing-toggle__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.financing-toggle__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.financing-toggle__hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.financing-toggle__chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.financing-toggle--open .financing-toggle__chevron {
+  transform: rotate(180deg);
+}
+
 .financing {
   padding: 16px;
   background: var(--bg-main);
