@@ -255,7 +255,7 @@ export const luminaFloorPlan: VectorMapDef = {
   viewBox: '0 0 1200 900',
   width: 1200,
   height: 900,
-  imageUrl: '/floorplan-real.jpg',
+  imageUrl: '/floorplan.webp',
   unitPolygons: [
     {
       graphicId: 'unit-lumina-5A',

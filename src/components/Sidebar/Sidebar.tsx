@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Unit, FilterState, UnitStatus } from '../../types/realEstate';
-import { Search, Filter, Package } from 'lucide-react';
+import { Search, Filter, Package, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { STATUS_LABELS, formatCurrency } from '../../utils/format';
 
 interface SidebarProps {
@@ -39,15 +39,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const resPct = (stats.reservedUnits / total) * 100;
   const soldPct = (stats.soldUnits / total) * 100;
 
-  const hasActiveFilters =
-    filters.search.trim() !== '' ||
-    filters.status !== 'ALL' ||
-    filters.rooms !== 'ALL' ||
-    filters.unitType !== 'ALL' ||
-    filters.floors !== 'ALL' ||
-    filters.minPrice > 0 ||
-    filters.maxPrice < Infinity ||
-    filters.sortBy !== 'code';
+  // Filters are collapsible on phones (see responsive.css); always open on desktop
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const activeFilterCount = [
+    filters.search.trim() !== '',
+    filters.status !== 'ALL',
+    filters.rooms !== 'ALL',
+    filters.unitType !== 'ALL',
+    filters.floors !== 'ALL',
+    filters.minPrice > 0 || filters.maxPrice < Infinity,
+    filters.sortBy !== 'code',
+  ].filter(Boolean).length;
+  const hasActiveFilters = activeFilterCount > 0;
 
   return (
     <aside className="sidebar">
@@ -91,8 +95,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
+      {/* Filters toggle (phones only) */}
+      <button
+        type="button"
+        className="sidebar__filters-toggle"
+        onClick={() => setFiltersOpen(open => !open)}
+        aria-expanded={filtersOpen}
+        aria-controls="sidebar-filters"
+      >
+        <SlidersHorizontal size={15} />
+        Filtros
+        {hasActiveFilters && (
+          <span className="sidebar__filters-count">
+            {activeFilterCount} {activeFilterCount === 1 ? 'activo' : 'activos'}
+          </span>
+        )}
+        <ChevronDown
+          size={16}
+          className={`sidebar__filters-chevron ${filtersOpen ? 'sidebar__filters-chevron--open' : ''}`}
+        />
+      </button>
+
       {/* Filters Section */}
-      <div className="sidebar__section">
+      <div
+        id="sidebar-filters"
+        className={`sidebar__section sidebar__filters ${filtersOpen ? '' : 'sidebar__filters--collapsed'}`}
+      >
         <h3 className="sidebar__section-title">
           <Filter size={12} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle' }} />
           Filtros

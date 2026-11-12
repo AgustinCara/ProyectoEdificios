@@ -7,6 +7,20 @@
     <meta name="theme-color" content="#faf8f5" />
     <title>InmoView | Planos Interactivos & Inventario en Tiempo Real</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Link preview (WhatsApp, redes). og:image needs an absolute URL: set VITE_SITE_URL -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="InmoView" />
+    <meta property="og:title" content="InmoView | Departamentos y lotes disponibles" />
+    <meta property="og:description" content="Recorré la fachada y los planos, mirá precios y disponibilidad en tiempo real y reservá tu unidad online." />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Facade image is the first thing buyers see: start loading it right away -->
+    <link rel="preload" as="image" href="/building-facade.webp" type="image/webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />

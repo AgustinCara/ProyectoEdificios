@@ -337,7 +337,7 @@ export const mockProjects: Project[] = [
       note: 'Cuotas fijas en USD',
     },
     amenities: ['Rooftop Lounge', 'Piscina Infinity', 'Gimnasio Tech', 'Cocheras Valet'],
-    heroImage: '/building-facade-real.jpg',
+    heroImage: '/building-facade.webp',
     facade: luminaFacade,
     blueprint: {
       id: 'bp-lumina-p5',
@@ -346,7 +346,7 @@ export const mockProjects: Project[] = [
       viewBox: '0 0 1200 900',
       width: 1200,
       height: 900,
-      imageUrl: '/floorplan-real.jpg',
+      imageUrl: '/floorplan.webp',
     },
     units: luminaUnits,
   },
@@ -366,7 +366,7 @@ export const mockProjects: Project[] = [
       note: 'Cuotas en USD',
     },
     amenities: ['Pileta', 'SUM', 'Cocheras', 'Locales', 'Gimnasio', 'Lavadero'],
-    heroImage: '/building-facade.jpg',
+    heroImage: '/building-facade.webp',
     facade: torreMiradorFacade,
     blueprint: {
       id: 'bp-torre-p4',

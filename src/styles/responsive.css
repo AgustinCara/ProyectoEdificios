@@ -81,6 +81,21 @@
     padding: 14px 16px;
   }
 
+  /* Filters fold behind a one-line toggle so the unit list shows up right away */
+  .sidebar__filters-toggle {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .sidebar__filters--collapsed {
+    display: none;
+  }
+
+  /* The toggle already says "Filtros" */
+  .sidebar__filters > .sidebar__section-title {
+    display: none;
+  }
+
   /* The whole panel scrolls; no nested scroll area for the list */
   .unit-list {
     max-height: none;
