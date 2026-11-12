@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Project, Unit, ReservationContact } from '../../types/realEstate';
 import { CalendarCheck, CheckCircle2, MessageCircle, X } from 'lucide-react';
 import { formatCurrency } from '../../utils/format';
@@ -35,14 +35,41 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [reservedBy, setReservedBy] = useState<string | null>(null);
 
-  // Close on Escape
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Escape closes only the modal: listen in the capture phase and stop the key
+  // before it reaches the unit drawer underneath. Tab stays inside the modal.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
   }, [onClose]);
+
+  // Give focus back to whatever opened the modal (the "Reservar" button). Read it
+  // during the first render: by the time effects run, autoFocus moved it to the form.
+  const [opener] = useState(() => document.activeElement as HTMLElement | null);
+  useEffect(() => () => opener?.focus(), [opener]);
 
   const setField = (key: keyof ReservationContact) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -74,6 +101,7 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal"
+        ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="reservation-title"

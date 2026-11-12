@@ -26,6 +26,32 @@ export interface Unit {
   centroid?: { x: number; y: number }; // Coordenada central para Tooltip
 }
 
+/** Interactive shape of a unit on the floor plan, linked to a Unit via graphicId */
+export interface PolygonDef {
+  graphicId: string;
+  points: string; // SVG polygon points
+  labelPos: { x: number; y: number };
+}
+
+export interface StructuralElement {
+  type: 'wall' | 'wall-thick' | 'area-label' | 'common-area' | 'green-area' | 'road' | 'street-label';
+  points?: string; // polygon points for filled areas
+  lines?: Array<{ x1: number; y1: number; x2: number; y2: number }>; // for walls
+  label?: string;
+  labelPos?: { x: number; y: number };
+  rotation?: number;
+}
+
+/** Floor plan / masterplan geometry, in SVG viewBox coordinates */
+export interface VectorMapDef {
+  viewBox: string;
+  width: number;
+  height: number;
+  unitPolygons: PolygonDef[];
+  structuralElements: StructuralElement[];
+  imageUrl?: string; // optional render under the polygons
+}
+
 export interface Blueprint {
   id: string;
   name: string;
@@ -71,6 +97,7 @@ export interface Project {
   location: string;
   projectType: ProjectType;
   blueprint: Blueprint;
+  floorPlan: VectorMapDef;
   units: Unit[];
   developer?: string;
   amenities?: string[];

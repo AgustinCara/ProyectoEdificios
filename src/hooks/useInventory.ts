@@ -19,25 +19,32 @@ const defaultFilters: FilterState = {
   floors: 'ALL',
 };
 
+// Fresh copy so React sees a new object after the service mutates its data
+function readProject(slug: string): Project | undefined {
+  const p = realEstateService.getProjectBySlug(slug);
+  return p ? { ...p, units: [...p.units] } : undefined;
+}
+
 export function useInventory(projectSlug: string) {
-  const [project, setProject] = useState<Project | undefined>(undefined);
+  const [project, setProject] = useState<Project | undefined>(() => readProject(projectSlug));
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [isSimulating, setIsSimulating] = useState(false);
   const [changedUnitIds, setChangedUnitIds] = useState<Set<string>>(new Set());
   const changedTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  // Load project data
-  const loadProject = useCallback(() => {
-    const p = realEstateService.getProjectBySlug(projectSlug);
-    if (p) {
-      setProject({ ...p, units: [...p.units] });
-    }
-  }, [projectSlug]);
-
-  useEffect(() => {
-    loadProject();
+  // Project switched: load it and reset filters during render (no extra effect pass)
+  const [loadedSlug, setLoadedSlug] = useState(projectSlug);
+  if (loadedSlug !== projectSlug) {
+    setLoadedSlug(projectSlug);
+    setProject(readProject(projectSlug));
     setFilters(defaultFilters);
-  }, [loadProject]);
+  }
+
+  // Reload after live changes (status updates, reset)
+  const loadProject = useCallback(() => {
+    const p = readProject(projectSlug);
+    if (p) setProject(p);
+  }, [projectSlug]);
 
   // Subscribe to real-time events
   useEffect(() => {

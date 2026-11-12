@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { Unit, ReservationContact } from './types/realEstate';
-import { mockProjects } from './data/mockProjects';
-import { towerFloorPlan, subdivisionMasterplan, luminaFloorPlan } from './data/vectorMaps';
+import { realEstateService } from './services/realEstateService';
 import { useInventory } from './hooks/useInventory';
 import { Header } from './components/Header/Header';
 import type { ViewMode } from './components/Header/Header';
@@ -17,10 +16,14 @@ import { readDeepLink, writeDeepLink } from './utils/links';
 // Internal tools (mapper, reset, simulation) only show up with ?admin in the URL
 const showDevTools = new URLSearchParams(window.location.search).has('admin');
 
+// Project list for the selector (lightweight: no units)
+const projects = realEstateService.getProjects();
+
 // Shared link (?proyecto=…&unidad=…) → initial project, unit and view
 const initialLink = readDeepLink();
 const initialProject =
-  mockProjects.find(p => p.slug === initialLink.projectSlug) ?? mockProjects[0];
+  (initialLink.projectSlug && realEstateService.getProjectBySlug(initialLink.projectSlug)) ||
+  realEstateService.getProjectBySlug(projects[0].slug)!;
 const initialUnit = initialLink.unitCode
   ? initialProject.units.find(u => u.code.toLowerCase() === initialLink.unitCode!.toLowerCase())
   : undefined;
@@ -52,13 +55,6 @@ function App() {
     reserveUnit,
   } = useInventory(currentSlug);
 
-  // Determine which vector map to use
-  const mapDef = useMemo(() => {
-    if (!project) return luminaFloorPlan;
-    if (project.slug === 'residencias-lumina-plaza') return luminaFloorPlan;
-    return project.projectType === 'BUILDING' ? towerFloorPlan : subdivisionMasterplan;
-  }, [project]);
-
   const selectedUnit = useMemo<Unit | null>(
     () => project?.units.find(u => u.id === selectedUnitId) ?? null,
     [project, selectedUnitId]
@@ -81,7 +77,7 @@ function App() {
     setSelectedUnitId(null);
     setActiveLevelId(null);
     // Default to facade for buildings, floorplan for subdivisions
-    const proj = mockProjects.find(p => p.slug === slug);
+    const proj = projects.find(p => p.slug === slug);
     setViewMode(proj?.projectType === 'BUILDING' ? 'facade' : 'floorplan');
   }, []);
 
@@ -146,6 +142,7 @@ function App() {
 
   if (!project) return null;
 
+  const mapDef = project.floorPlan;
   const isBuilding = project.projectType === 'BUILDING';
   const showFacade = isBuilding && viewMode === 'facade' && !!project.facade;
 
@@ -165,7 +162,7 @@ function App() {
   return (
     <div className="app-layout">
       <Header
-        projects={mockProjects}
+        projects={projects}
         currentProject={project}
         onSelectProject={handleSelectProject}
         isSimulating={isSimulating}

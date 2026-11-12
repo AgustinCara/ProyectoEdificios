@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Project, Unit } from '../../types/realEstate';
 import {
   STATUS_LABELS,
@@ -31,12 +31,27 @@ interface UnitDrawerProps {
 }
 
 export const UnitDrawer: React.FC<UnitDrawerProps> = ({ project, unit, onClose, onReserve }) => {
-  const [linkCopied, setLinkCopied] = useState(false);
+  // Tied to the unit, so the "copied" feedback never carries over to another one
+  const [copiedUnitId, setCopiedUnitId] = useState<string | null>(null);
+  const linkCopied = !!unit && copiedUnitId === unit.id;
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const isOpen = !!unit;
 
-  // Reset the "copied" feedback when switching units
+  // Close on Escape (the reservation modal stops the key first when it's on top)
   useEffect(() => {
-    setLinkCopied(false);
-  }, [unit?.id]);
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  // Move keyboard focus into the drawer when it opens or shows another unit
+  const unitId = unit?.id;
+  useEffect(() => {
+    if (unitId) drawerRef.current?.focus();
+  }, [unitId]);
 
   if (!unit) return null;
 
@@ -60,8 +75,8 @@ export const UnitDrawer: React.FC<UnitDrawerProps> = ({ project, unit, onClose, 
       return;
     }
     await navigator.clipboard.writeText(url);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+    setCopiedUnitId(unit.id);
+    setTimeout(() => setCopiedUnitId(null), 2000);
   };
 
   return (
@@ -70,11 +85,18 @@ export const UnitDrawer: React.FC<UnitDrawerProps> = ({ project, unit, onClose, 
       <div className="drawer-overlay" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="drawer">
+      <div
+        className="drawer"
+        ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="drawer-title"
+        tabIndex={-1}
+      >
         {/* Header */}
         <div className="drawer__header">
           <div className="drawer__title-group">
-            <h2 className="drawer__title">{unit.code}</h2>
+            <h2 className="drawer__title" id="drawer-title">{unit.code}</h2>
             <p className="drawer__subtitle">
               {unit.block ? `${unit.block} · ` : ''}
               {UNIT_TYPE_LABELS[unit.unitType]}

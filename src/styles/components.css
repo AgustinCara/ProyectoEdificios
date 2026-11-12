@@ -138,6 +138,11 @@
   box-shadow: -8px 0 32px rgba(15, 23, 42, 0.12);
 }
 
+/* Focused programmatically on open (for keyboard users); no ring around the whole panel */
+.drawer:focus {
+  outline: none;
+}
+
 @keyframes drawerSlideIn {
   from {
     transform: translateX(100%);

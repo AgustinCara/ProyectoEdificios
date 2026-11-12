@@ -11,29 +11,7 @@
 // ViewBox: 0 0 1200 800
 // Layout: 6 apartments on a typical floor with central hallway, elevator and stairs
 
-export interface PolygonDef {
-  graphicId: string;
-  points: string; // SVG polygon points
-  labelPos: { x: number; y: number };
-}
-
-export interface StructuralElement {
-  type: 'wall' | 'wall-thick' | 'area-label' | 'common-area' | 'green-area' | 'road' | 'street-label';
-  points?: string; // polygon points for filled areas
-  lines?: Array<{ x1: number; y1: number; x2: number; y2: number }>; // for walls
-  label?: string;
-  labelPos?: { x: number; y: number };
-  rotation?: number;
-}
-
-export interface VectorMapDef {
-  viewBox: string;
-  width: number;
-  height: number;
-  unitPolygons: PolygonDef[];
-  structuralElements: StructuralElement[];
-  imageUrl?: string;
-}
+import type { VectorMapDef } from '../types/realEstate';
 
 // ─── TOWER FLOOR PLAN ────────────────────────────────────────────────────────
 

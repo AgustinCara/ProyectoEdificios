@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import type { Unit } from '../../types/realEstate';
-import type { VectorMapDef } from '../../data/vectorMaps';
+import type { VectorMapDef } from '../../types/realEstate';
 import { usePanZoom } from '../../hooks/usePanZoom';
 import { Tooltip } from '../Tooltip/Tooltip';
 import { ZoomIn, ZoomOut, Maximize, ArrowLeft } from 'lucide-react';

@@ -348,6 +348,7 @@ export const mockProjects: Project[] = [
       height: 900,
       imageUrl: '/floorplan.webp',
     },
+    floorPlan: luminaFloorPlan,
     units: luminaUnits,
   },
   {
@@ -376,6 +377,7 @@ export const mockProjects: Project[] = [
       width: 1200,
       height: 800,
     },
+    floorPlan: towerFloorPlan,
     units: torreUnits,
   },
   {
@@ -400,6 +402,7 @@ export const mockProjects: Project[] = [
       width: 1600,
       height: 1000,
     },
+    floorPlan: subdivisionMasterplan,
     units: barrioUnits,
   },
 ];
